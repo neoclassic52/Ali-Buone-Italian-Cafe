@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ali Buone Italian Café | 宇都宮の本格石窯ピッツァ</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3C2A21', /* ダークブラウン */
+                        secondary: '#D5BDAF', /* くすみベージュ */
+                        accent: '#B04A3C', /* 深いレンガ色・トマトレッド */
+                        bgLight: '#F9F6F0', /* オフホワイト */
+                    },
+                    fontFamily: {
+                        serif: ['"Noto Serif JP"', 'serif'],
+                        cinzel: ['"Cinzel"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* カスタムスタイル */
+        body {
+            font-family: 'Noto Serif JP', serif;
+            color: #3C2A21;
+            background-color: #F9F6F0;
+        }
+
+        /* ヒーロースライダーのスタイル */
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease-in-out, transform 6s ease-out;
+            transform: scale(1);
+            object-fit: cover;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            transform: scale(1.05); /* ズームエフェクト */
+        }
+
+        /* ヘッダーのスクロールエフェクト */
+        header {
+            transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+        }
+        header.scrolled {
+            background-color: rgba(249, 246, 240, 0.95);
+            backdrop-filter: blur(10px);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        header.scrolled .logo-text, header.scrolled .nav-link {
+            color: #3C2A21;
+        }
+
+        /* セクション見出しの装飾 */
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background-color: #B04A3C;
+            margin: 16px auto 0;
+        }
+
+        /* 予約ボタンホバー */
+        .btn-reserve {
+            transition: all 0.3s ease;
+        }
+        .btn-reserve:hover {
+            background-color: #8E382A;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(176, 74, 60, 0.3);
+        }
+
+        /* アニメーション用クラス */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased font-serif text-primary bg-bgLight">
+
+    <!-- Header -->
+    <header id="header" class="fixed w-full z-50 top-0 py-6 px-4 md:px-8 flex justify-between items-center text-white transition-all duration-300">
+        <a href="#" class="flex flex-col items-center">
+            <h1 class="logo-text font-cinzel text-2xl md:text-3xl tracking-widest font-semibold drop-shadow-md">Ali Buone</h1>
+            <span class="logo-text text-[0.65rem] tracking-[0.3em] font-cinzel mt-1 drop-shadow-md">ITALIAN CAFÉ</span>
+        </a>
+        
+        <nav class="hidden md:flex space-x-8 items-center">
+            <a href="#concept" class="nav-link text-sm tracking-wider hover:text-secondary transition-colors drop-shadow-md">CONCEPT</a>
+            <a href="#menu" class="nav-link text-sm tracking-wider hover:text-secondary transition-colors drop-shadow-md">MENU</a>
+            <a href="#access" class="nav-link text-sm tracking-wider hover:text-secondary transition-colors drop-shadow-md">ACCESS</a>
+            <a href="#reserve" class="btn-reserve bg-accent text-white px-6 py-3 rounded-sm text-sm tracking-wider font-semibold shadow-lg hover:shadow-xl flex items-center gap-2">
+                <i class="ph ph-calendar-check text-lg"></i> 予約する
+            </a>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden text-white drop-shadow-md z-50">
+            <i class="ph ph-list text-3xl"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-primary/95 z-40 hidden flex-col justify-center items-center space-y-8 text-secondary backdrop-blur-sm">
+        <a href="#concept" class="text-xl tracking-widest mobile-link">CONCEPT</a>
+        <a href="#menu" class="text-xl tracking-widest mobile-link">MENU</a>
+        <a href="#access" class="text-xl tracking-widest mobile-link">ACCESS</a>
+        <a href="#reserve" class="bg-accent text-white px-8 py-4 rounded-sm tracking-wider font-semibold mobile-link">予約する</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center">
+        <!-- スライダー画像 -->
+        <div id="hero-slider" class="absolute inset-0">
+            <img src="https://raw.githubusercontent.com/neoclassic52/Ali-Buone-Italian-Cafe/refs/heads/main/%E3%83%88%E3%83%83%E3%83%97%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%A1%E3%82%A4%E3%83%B3%E7%94%BB%E5%83%8F1.png" alt="Pizza" class="hero-slide active">
+            <img src="https://raw.githubusercontent.com/neoclassic52/Ali-Buone-Italian-Cafe/refs/heads/main/%E3%83%88%E3%83%83%E3%83%97%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%A1%E3%82%A4%E3%83%B3%E7%94%BB%E5%83%8F2.png" alt="Pasta" class="hero-slide">
+            <img src="https://raw.githubusercontent.com/neoclassic52/Ali-Buone-Italian-Cafe/refs/heads/main/%E3%83%88%E3%83%83%E3%83%97%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%A1%E3%82%A4%E3%83%B3%E7%94%BB%E5%83%8F3.png" alt="Interior" class="hero-slide">
+        </div>
+        
+        <!-- オーバーレイ -->
+        <div class="absolute inset-0 bg-black/40"></div>
+
+        <!-- キャッチコピー -->
+        <div class="relative z-10 text-center text-white px-4 fade-in-up visible">
+            <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 drop-shadow-lg" style="text-shadow: 0 4px 6px rgba(0,0,0,0.5);">
+                石窯で焼き上げる、<br class="md:hidden">本場仕込みのイタリアン。
+            </h2>
+            <p class="text-sm md:text-lg tracking-widest font-light drop-shadow-md">
+                宇都宮の街角で、焼きたてピッツァと<br class="md:hidden">自家製ジェラートを楽しむ小さなイタリア時間。
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+            <a href="#concept" class="text-white opacity-80 flex flex-col items-center">
+                <span class="text-xs tracking-widest mb-2 font-cinzel">SCROLL</span>
+                <i class="ph ph-arrow-down text-xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Concept & Story Section -->
+    <section id="concept" class="py-24 px-4 md:px-8 max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-in-up">
+            <h2 class="font-cinzel text-3xl md:text-4xl text-primary tracking-widest section-title">CONCEPT & STORY</h2>
+            <p class="mt-6 text-lg md:text-xl text-primary/80">本格イタリアンを、宇都宮の日常に。</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20">
+            <div class="w-full md:w-1/2 fade-in-up">
+                <div class="relative p-2 bg-white shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500">
+                    <img src="https://raw.githubusercontent.com/neoclassic52/Ali-Buone-Italian-Cafe/refs/heads/main/%E5%BA%97%E4%B8%BB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E7%94%BB%E5%83%8F.png" alt="店主 三崎翼" class="w-full h-auto object-cover grayscale-[20%]">
+                    <div class="absolute -bottom-6 -right-6 bg-secondary text-primary px-6 py-4 shadow-lg">
+                        <p class="text-sm font-bold tracking-widest mb-1">店主</p>
+                        <p class="text-xl font-serif">三崎 翼 <span class="text-sm font-normal">Tsubasa Misaki</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/2 space-y-6 text-primary/80 leading-relaxed fade-in-up">
+                <p>
+                    学生時代に打ち込んだサッカーを通じて、イタリア文化に興味を持ちました。大学時代に訪れたイタリア旅行で、街角のカフェや家族でにぎわうトラットリア、焼きたてのピッツァ、香り高いエスプレッソに感動し、その食文化に強く魅了されました。
+                </p>
+                <p>
+                    「いつか自分の店を持ちたい」。その想いを胸に、会社員を経て本場イタリアへ。現地のレストランで5年間修行し、イタリアの食文化を基礎から学びました。
+                </p>
+                <p>
+                    帰国後、東京・青山のレストランで店長を務め、結婚を機に地元・宇都宮へ。
+                </p>
+                <p class="font-bold text-primary text-lg border-l-4 border-accent pl-4">
+                    地域の人たちが、特別な日だけでなく、日常の中で気軽に本場の味と心地よい時間を楽しめるお店を作りたい。
+                </p>
+                <p>
+                    そんな想いから「Ali Buone Italian Café」は誕生しました。友人とのランチ、ご家族でのディナー、仕事帰りの一杯など、皆様の日常に寄り添う場所でありたいと願っています。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="py-24 bg-[#EAE3DA]">
+        <div class="max-w-7xl mx-auto px-4 md:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="font-cinzel text-3xl md:text-4xl text-primary tracking-widest section-title">MENU</h2>
+                <p class="mt-6 text-primary/80">こだわりの食材と、本場仕込みの技術</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Menu Item 1 -->
+                <div class="bg-white group overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 fade-in-up">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=800" alt="石窯ピッツァ" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300"></div>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold mb-3 font-serif">石窯ピッツァ</h3>
+                        <p class="text-sm text-primary/70 mb-4 h-20">看板商品のナポリ風ピッツァ。高温の石窯で一気に焼き上げる香ばしさと、もちっとした生地が特徴です。一番人気は王道のマルゲリータ。</p>
+                    </div>
+                </div>
+
+                <!-- Menu Item 2 -->
+                <div class="bg-white group overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 fade-in-up" style="transition-delay: 100ms;">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=800" alt="季節のスパゲッティ" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold mb-3 font-serif">季節のスパゲッティ</h3>
+                        <p class="text-sm text-primary/70 mb-4 h-20">旬の野菜や魚介、地元宇都宮の食材を活かしたパスタ。季節ごとに変わるメニューは、常連のお客様にもご好評いただいております。</p>
+                    </div>
+                </div>
+
+                <!-- Menu Item 3 -->
+                <div class="bg-white group overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 fade-in-up" style="transition-delay: 200ms;">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1563805042-7684c8a9e9cb?auto=format&fit=crop&q=80&w=800" alt="自家製ジェラート" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold mb-3 font-serif">自家製ジェラート</h3>
+                        <p class="text-sm text-primary/70 mb-4 h-20">店内で丁寧に仕込む自家製。ミルク、ピスタチオ、季節のフルーツなど。食後のデザートとしてはもちろん、カフェ利用時にも人気です。</p>
+                    </div>
+                </div>
+
+                <!-- Menu Item 4 -->
+                <div class="bg-white group overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 fade-in-up" style="transition-delay: 300ms;">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=800" alt="エスプレッソ" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold mb-3 font-serif">カフェメニュー</h3>
+                        <p class="text-sm text-primary/70 mb-4 h-20">イタリアらしい濃厚なエスプレッソや、クリーミーなカプチーノを提供。休日の午後、ゆったりとしたカフェ時間をお過ごしください。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 fade-in-up">
+                <a href="#reserve" class="inline-block border border-primary text-primary px-8 py-3 hover:bg-primary hover:text-white transition-colors duration-300 tracking-widest text-sm">ランチ・ディナーのご予約はこちら</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info & Access Section -->
+    <section id="access" class="py-24 px-4 md:px-8 max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row gap-12 bg-white p-8 md:p-12 shadow-xl fade-in-up">
+            <div class="w-full md:w-1/2 space-y-8">
+                <div>
+                    <h2 class="font-cinzel text-3xl text-primary tracking-widest mb-6">INFO & ACCESS</h2>
+                    <h3 class="text-2xl font-bold font-serif mb-2">Ali Buone Italian Café</h3>
+                    <p class="text-primary/70">アリ ブオーネ イタリアン カフェ</p>
+                </div>
+                
+                <ul class="space-y-4 border-t border-b border-gray-200 py-6 text-primary/80">
+                    <li class="flex items-start">
+                        <i class="ph ph-map-pin text-xl text-accent mr-4 mt-1"></i>
+                        <span>〒320-0000<br>栃木県宇都宮市〇〇町1-2-3<br><span class="text-sm">※架空の住所です</span></span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="ph ph-clock text-xl text-accent mr-4"></i>
+                        <div>
+                            <p>Lunch: 11:30 - 15:00 (L.O. 14:00)</p>
+                            <p>Dinner: 17:30 - 22:00 (L.O. 21:00)</p>
+                        </div>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="ph ph-calendar-x text-xl text-accent mr-4"></i>
+                        <span>定休日：月曜日・第2火曜日</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="ph ph-phone text-xl text-accent mr-4"></i>
+                        <span class="text-xl font-serif">028-000-0000</span>
+                    </li>
+                </ul>
+                
+                <div>
+                    <a href="#reserve" class="btn-reserve w-full block text-center bg-accent text-white py-4 rounded-sm font-bold tracking-widest text-lg">
+                        WEB予約はこちら
+                    </a>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/2 bg-gray-200 min-h-[400px]">
+                <!-- Google Map Placeholder (宇都宮駅周辺を表示) -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d102434.90906233157!2d139.816480838101!3d36.56637145887208!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601f677271960167%3A0xe54dfbc949c9330a!2z5qCD5pyo55yM5a6H6YO95a6u5biC!5e0!3m2!1sja!2sjp!4v1716960000000!5m2!1sja!2sjp" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Reserve Button (SP Only) -->
+    <a href="#reserve" class="md:hidden fixed bottom-6 right-6 bg-accent text-white w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-2xl z-40 btn-reserve border-2 border-white">
+        <i class="ph ph-calendar-check text-2xl"></i>
+        <span class="text-[0.6rem] font-bold mt-1">予約</span>
+    </a>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white py-12 text-center border-t-4 border-accent">
+        <div class="mb-6">
+            <h1 class="font-cinzel text-2xl tracking-widest">Ali Buone</h1>
+            <p class="text-xs tracking-widest font-cinzel mt-1 text-secondary">ITALIAN CAFÉ</p>
+        </div>
+        <div class="flex justify-center space-x-6 mb-8 text-secondary">
+            <a href="#" class="hover:text-white transition-colors"><i class="ph ph-instagram-logo text-2xl"></i></a>
+            <a href="#" class="hover:text-white transition-colors"><i class="ph ph-facebook-logo text-2xl"></i></a>
+            <a href="#" class="hover:text-white transition-colors"><i class="ph ph-x-logo text-2xl"></i></a>
+        </div>
+        <p class="text-xs text-gray-400">&copy; 2026 Ali Buone Italian Café. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. ヒーローセクションのスライダー機能
+            const slides = document.querySelectorAll('.hero-slide');
+            let currentSlide = 0;
+            const slideInterval = 5000; // 5秒ごとに切り替え
+
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            setInterval(nextSlide, slideInterval);
+
+
+            // 2. スクロール時のヘッダー背景色変更
+            const header = document.getElementById('header');
+            const heroSection = document.querySelector('section');
+            const logoTexts = document.querySelectorAll('.logo-text');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                    // スクロール時はアイコンを黒っぽく
+                    mobileMenuBtn.classList.replace('text-white', 'text-primary');
+                    logoTexts.forEach(el => el.classList.remove('text-white'));
+                    navLinks.forEach(el => el.classList.remove('text-white'));
+                } else {
+                    header.classList.remove('scrolled');
+                    // トップでは白に戻す
+                    mobileMenuBtn.classList.replace('text-primary', 'text-white');
+                    logoTexts.forEach(el => el.classList.add('text-white'));
+                    navLinks.forEach(el => el.classList.add('text-white'));
+                }
+            });
+
+            // 3. モバイルメニューの開閉
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+            let isMenuOpen = false;
+
+            mobileMenuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.classList.add('flex');
+                    mobileMenuBtn.innerHTML = '<i class="ph ph-x text-3xl"></i>';
+                    mobileMenuBtn.classList.replace('text-primary', 'text-white'); // メニュー内では常に白
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                    mobileMenuBtn.innerHTML = '<i class="ph ph-list text-3xl"></i>';
+                    if (window.scrollY > 50) {
+                        mobileMenuBtn.classList.replace('text-white', 'text-primary');
+                    }
+                }
+            });
+
+            // モバイルメニューのリンククリックで閉じる
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                    mobileMenuBtn.innerHTML = '<i class="ph ph-list text-3xl"></i>';
+                    isMenuOpen = false;
+                    if (window.scrollY > 50) {
+                        mobileMenuBtn.classList.replace('text-white', 'text-primary');
+                    }
+                });
+            });
+
+            // 4. スクロールアニメーション (Fade In Up)
+            const fadeElements = document.querySelectorAll('.fade-in-up');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // 一度発火したら監視を解除
+                    }
+                });
+            }, observerOptions);
+
+            fadeElements.forEach(el => {
+                // 初期状態はCSSでopacity:0に設定済み
+                observer.observe(el);
+            });
+
+            // 5. スムーススクロール (アンカーリンク)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        const headerOffset = 80;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  
+                        window.scrollTo({
+                             top: offsetPosition,
+                             behavior: "smooth"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
